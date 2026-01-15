@@ -12,7 +12,7 @@ import (
 
 const (
 	testRPCURL          = "http://127.0.0.1:8545"
-	testContractAddress = "0x5FbDB2315678afecb367f032d93F642f64180aa3"
+	testContractAddress = "0x5FC8d32690cc91D4c39d9d3abcBD16989F875707"
 	testPrivateKey0     = "ac0974bec39a17e36ba4a6b4d238ff944bacb478cbed5efcae784d7bf4f2ff80" // Account #0
 	testPrivateKey1     = "59c6995e998f97a5a0044966f0945389dc9e86dae88c7a8412f4603b6b78690d" // Account #1
 )
@@ -58,7 +58,7 @@ func TestCreateEnvelope_DirectFixed_Success(t *testing.T) {
 	}
 
 	amount := big.NewInt(100000000000000000) // 0.1 ETH
-	recipient := common.HexToAddress("0x70997970C51812dc3A010C7d01b50e0d17dc79C8")
+	recipient := common.HexToAddress("0x70997970c51812dc3a010c7d01b50e0d17dc79c8")
 
 	tx, err := service.CreateEnvelope(
 		DIRECT_FIXED,
@@ -251,9 +251,12 @@ func TestClaimEnvelope_FirstClaim_Success(t *testing.T) {
 	serviceCreator := setupTestService(t, testPrivateKey0)
 	defer serviceCreator.Client.Close()
 
-	nextId, _ := serviceCreator.GetNextEnvelopeId()
+	nextId, err := serviceCreator.GetNextEnvelopeId()
+	if err != nil {
+		t.Fatalf("Failed to get next ID: %v", err)
+	}
 	totalClaims := uint32(3)
-	amountPerClaim := big.NewInt(50000000000000000) // 0.05 ETH
+	amountPerClaim := big.NewInt(100000000000000000) // 0.1 ETH
 
 	tx, err := serviceCreator.CreateEnvelope(
 		GROUP_FIXED,

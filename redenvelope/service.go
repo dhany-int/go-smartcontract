@@ -213,12 +213,20 @@ func (s *RedEnvelopeService) GetEnvelope(envelopeId *big.Int) (*Envelope, error)
 
 // HasClaimed cek apakah user sudah klaim
 func (s *RedEnvelopeService) HasClaimed(envelopeId *big.Int, user common.Address) (bool, error) {
+	if envelopeId == nil {
+		return false, fmt.Errorf("envelopeId cannot be nil")
+	}
+
 	boundContract := bind.NewBoundContract(s.ContractAddress, s.ABI, s.Client, s.Client, s.Client)
 
 	var result []interface{}
 	err := boundContract.Call(&bind.CallOpts{}, &result, "hasUserClaimed", envelopeId, user)
 	if err != nil {
 		return false, fmt.Errorf("failed to check claim status: %v", err)
+	}
+
+	if len(result) == 0 {
+		return false, fmt.Errorf("no result returned from contract")
 	}
 
 	return result[0].(bool), nil
@@ -263,6 +271,10 @@ func (s *RedEnvelopeService) GetNextEnvelopeId() (*big.Int, error) {
 	err := boundContract.Call(&bind.CallOpts{}, &result, "nextEnvelopeId")
 	if err != nil {
 		return nil, fmt.Errorf("failed to get next envelope ID: %v", err)
+	}
+
+	if len(result) == 0 {
+		return nil, fmt.Errorf("no result returned from contract")
 	}
 
 	return result[0].(*big.Int), nil
